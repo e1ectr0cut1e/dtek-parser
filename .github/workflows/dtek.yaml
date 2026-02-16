@@ -19,6 +19,7 @@ jobs:
     strategy:
       matrix:
         environment: [dtek-oem, dtek-krem]
+    environment: ${{ matrix.environment }}
     env:
       OUTPUT_FILE: ${{ vars.NAME }}.json
       WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
