@@ -53,20 +53,15 @@ jobs:
           cd ${{ github.workspace }}/data
           git add ${{ env.OUTPUT_FILE }}
           if git diff --staged --exit-code; then
-            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "changed=false" >> "$GITHUB_OUTPUT"
           else
-            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "changed=true" >> "$GITHUB_OUTPUT"s
+            git commit -m "${{ env.OUTPUT_FILE }}-$(date +%s)"
+            git push origin HEAD:data
           fi
 
       - name: Trigger the webhook
         if:
           steps.changes.outputs.changed == 'true' && env.WEBHOOK_URL != ''
         run: |
-          curl -s -d @${{ github.workspace }}/data/${{ env.OUTPUT_FILE }} --header "Content-Type: application/json" ${{ env.WEBHOOK_URL }}
-
-      - name: Push the new JSON to the data branch
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          cd ${{ github.workspace }}/data
-          git commit -m "${{ env.OUTPUT_FILE }}-$(date +%s)"
-          git push origin HEAD:data
+          curl -s -d "@${{ github.workspace }}/data/${{ env.OUTPUT_FILE }}" --header "Content-Type: application/json" "${{ env.WEBHOOK_URL }}"
