@@ -11,6 +11,7 @@ env:
   PYTHON_VERSION: "3.14"
   PLAYWRIGHT_VERSION: "1.58.0"
   OUTPUT_FILE: ${{ vars.NAME }}.json
+  WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
 
 permissions:
   contents: write
@@ -55,9 +56,9 @@ jobs:
 
       - name: Trigger the webhook
         if:
-          steps.changes.outputs.changed == 'true' && secrets.WEBHOOK_URL != ''
+          steps.changes.outputs.changed == 'true' && env.WEBHOOK_URL != ''
         run: |
-          curl -s -d @${{ github.workspace }}/data/${{ env.OUTPUT_FILE }} --header "Content-Type: application/json" ${{ secrets.WEBHOOK_URL }}
+          curl -s -d @${{ github.workspace }}/data/${{ env.OUTPUT_FILE }} --header "Content-Type: application/json" ${{ env.WEBHOOK_URL }}
 
       - name: Push the new ${{ env.OUTPUT_FILE }} to the data branch
         if: steps.changes.outputs.changed == 'true'
