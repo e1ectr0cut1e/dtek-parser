@@ -7,7 +7,7 @@ from datetime import datetime
 from playwright.sync_api import sync_playwright, ViewportSize
 
 SHUTDOWNS_URL = os.getenv("SHUTDOWNS_URL", "https://www.dtek-krem.com.ua/ua/shutdowns")
-BROWSERLESS_TOKEN = os.getenv("BROWSERLESS_TOKEN", "")
+BROWSERLESS_TOKEN = os.environ["BROWSERLESS_TOKEN"]
 OUTPUT_FILE = os.getenv("OUTPUT_FILE", "dtek.json")
 USER_AGENT = os.getenv("USER_AGENT", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
