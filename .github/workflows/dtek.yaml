@@ -1,17 +1,14 @@
 name: dtek
 
 on:
-  workflow_call:
-    inputs:
-      environment:
-        required: true
-        type: string
+  schedule:
+    - cron: "15 * * * *" # at 45 minutes past the hour, every 3 hours, between 05:00 and 23:59
+    - cron: "45 5-23/3 * * *" # at 45 minutes past the hour, every 3 hours, between 05:00 and 23:59
+  workflow_dispatch:
 
 env:
   PYTHON_VERSION: "3.14"
   PLAYWRIGHT_VERSION: "1.58.0"
-  OUTPUT_FILE: ${{ vars.NAME }}.json
-  WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
 
 permissions:
   contents: write
@@ -19,7 +16,12 @@ permissions:
 jobs:
   scrape:
     runs-on: ubuntu-slim
-    environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        environment: [dtek-oem, dtek-krem]
+    env:
+      OUTPUT_FILE: ${{ vars.NAME }}.json
+      WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
     steps:
       - uses: actions/checkout@v6
 
