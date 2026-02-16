@@ -65,7 +65,7 @@ jobs:
               echo "✓ Created new commit for $TODAY"
             fi
 
-            if [ -n "$WEBKOOK_URL" ]; then
-              curl -s -d @dtek_data.json --header "Content-Type: application/json" "$WEBKOOK_URL"
+            if [ -n "$WEBHOOK_URL" ]; then
+              curl -s -d @dtek_data.json --header "Content-Type: application/json" "$WEBHOOK_URL"
             fi
           fi
