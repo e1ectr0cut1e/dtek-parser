@@ -29,17 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Restore Python cache
-        uses: actions/cache@v4
-        id: python-cache
-        with:
-          path: ~/.local/share/virtualenvs
-          key: >-
-            ${{ runner.os }}-python-${{ env.PYTHON_VERSION }}
-          restore-keys: |
-            ${{ runner.os }}-python-${{ env.PYTHON_VERSION }}
-            ${{ runner.os }}-python-
-
       - name: Checkout the data branch
         uses: actions/checkout@v6
         with:
@@ -58,13 +47,18 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: >-
-            ${{ runner.os }}-playwright-chromium-${{ env.PLAYWRIGHT_VERSION }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-chromium-${{ env.PLAYWRIGHT_VERSION }}
-            ${{ runner.os }}-playwright-
+            ${{ runner.os }}-python-${{ env.PYTHON_VERSION }}-playwright-chromium-${{ env.PLAYWRIGHT_VERSION }}
 
       - name: Install playwright chromium
         run: playwright install chromium --with-deps
+
+      - name: Save playwright cache
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            ${{ runner.os }}-python-${{ env.PYTHON_VERSION }}-playwright-chromium-${{ env.PLAYWRIGHT_VERSION }}
 
       - name: Run scraper for ${{ vars.NAME }}
         env:
@@ -82,8 +76,8 @@ jobs:
           if git diff --staged --exit-code; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
-            echo "changed=true" >> "$GITHUB_OUTPUT"s
-            git commit -m "${{ env.OUTPUT_FILE }}-$(date +%s)"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git commit -m "${{ vars.NAME }}-$(date +%s)"
             git push origin HEAD:data
           fi
 
