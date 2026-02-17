@@ -45,7 +45,9 @@ jobs:
         uses: actions/cache@v4
         id: playwright-cache
         with:
-          path: ~/.cache/ms-playwright
+          path: |
+            /var/cache/apt/archives
+            ~/.cache/ms-playwright
           key: >-
             ${{ runner.os }}-python-${{ env.PYTHON_VERSION }}-playwright-chromium-${{ env.PLAYWRIGHT_VERSION }}
 
@@ -56,7 +58,9 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
-          path: ~/.cache/ms-playwright
+          path: |
+            /var/cache/apt/archives
+            ~/.cache/ms-playwright
           key: >-
             ${{ runner.os }}-python-${{ env.PYTHON_VERSION }}-playwright-chromium-${{ env.PLAYWRIGHT_VERSION }}
 
@@ -85,4 +89,4 @@ jobs:
         if:
           steps.changes.outputs.changed == 'true' && env.WEBHOOK_URL != ''
         run: |
-          curl -s -d "@${{ github.workspace }}/data/${{ env.OUTPUT_FILE }}" --header "Content-Type: application/json" "${{ env.WEBHOOK_URL }}"
+          curl -s -d "@${{ github.workspace }}/data/${{ env.OUTPUT_FILE }}" --header "Content-Type: application/json" "${{ env.WEBHOOK_URL }}" > /dev/null
