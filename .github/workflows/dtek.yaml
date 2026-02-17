@@ -16,6 +16,9 @@ permissions:
 jobs:
   scrape:
     runs-on: ubuntu-slim
+    concurrency:
+      group: ${{ github.workflow }}
+      cancel-in-progress: false
     strategy:
       matrix:
         environment: [dtek-oem, dtek-krem]
@@ -25,6 +28,17 @@ jobs:
       WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
     steps:
       - uses: actions/checkout@v6
+
+      - name: Restore Python cache
+        uses: actions/cache@v4
+        id: python-cache
+        with:
+          path: ~/.local/share/virtualenvs
+          key: >-
+            ${{ runner.os }}-python-${{ env.PYTHON_VERSION }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ env.PYTHON_VERSION }}
+            ${{ runner.os }}-python-
 
       - name: Checkout the data branch
         uses: actions/checkout@v6
@@ -37,6 +51,18 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           pip-install: playwright==${{ env.PLAYWRIGHT_VERSION }} requests
+          cache: pip
+
+      - name: Restore playwright browser cache
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            ${{ runner.os }}-playwright-chromium-${{ env.PLAYWRIGHT_VERSION }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-chromium-${{ env.PLAYWRIGHT_VERSION }}
+            ${{ runner.os }}-playwright-
 
       - name: Install playwright chromium
         run: playwright install chromium --with-deps

@@ -8,7 +8,6 @@ from playwright.sync_api import sync_playwright, ViewportSize
 
 SHUTDOWNS_URL = os.getenv("SHUTDOWNS_URL", "https://www.dtek-krem.com.ua/ua/shutdowns")
 BROWSERLESS_TOKEN = os.environ["BROWSERLESS_TOKEN"]
-OUTPUT_FILE = os.getenv("OUTPUT_FILE", "dtek.json")
 USER_AGENT = os.getenv("USER_AGENT", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
 def scrape_dtek():
@@ -43,10 +42,9 @@ def scrape_dtek():
     json_text = match.group(1)
     data = json.loads(json_text)
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    json.dump(data, sys.stdout, ensure_ascii=False, indent=2)
 
-    print(f"✓ Data saved to {OUTPUT_FILE}", file=sys.stderr)
+    print(f"✓ Data extracted successfully", file=sys.stderr)
 
 if __name__ == "__main__":
     scrape_dtek()
